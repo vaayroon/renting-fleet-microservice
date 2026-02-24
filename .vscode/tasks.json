@@ -1,0 +1,135 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Build Main Project Dev",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "build",
+        "${workspaceFolder}/Capitole365.Operations.WebApi/Capitole365.Operations.WebApi.csproj",
+        "/property:GenerateFullPaths=true",
+        "/consoleloggerparameters:NoSummary",
+        "/p:Configuration=Debug",
+        "/p:Platform=\"AnyCPU\"",
+        "/p:EnvironmentName=Development"
+      ],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "Run Main Project [https]",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/Capitole365.Operations.WebApi/Capitole365.Operations.WebApi.csproj",
+        "--launch-profile",
+        "https"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "none",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Watch Main Project [https]",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "watch",
+        "run",
+        "--project",
+        "${workspaceFolder}/Capitole365.Operations.WebApi/Capitole365.Operations.WebApi.csproj",
+        "--launch-profile",
+        "https"
+      ],
+      "problemMatcher": "$msCompile",
+      "group": {
+        "kind": "none",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "Publish Main Project",
+      "type": "shell",
+      "command": "dotnet",
+      "args": [
+        "publish",
+        "${workspaceFolder}/Capitole365.Operations.WebApi/Capitole365.Operations.WebApi.csproj",
+        "-c",
+        "Release",
+        "/p:EnvironmentName=${input:env}",
+        "-o",
+        "${workspaceFolder}/publish/${input:env}",
+        "/p:DeleteExistingFiles=true",
+        "/p:TargetFramework=net8.0",
+        "/p:RuntimeIdentifier=win-x64"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [],
+      "detail": "Publica el proyecto en el entorno seleccionado."
+    },
+    {
+      "label": "Publish and Zip Main Project",
+      "type": "shell",
+      "command": "cmd",
+      "args": [
+        "/c",
+        "cd ${workspaceFolder}/publish/${input:env} && zip -r ${input:version}.${input:env}.zip * && move ${input:version}.${input:env}.zip ${workspaceFolder}/publish/${input:version}.${input:env}.zip"
+      ],
+      "dependsOn": [
+        "Publish Main Project"
+      ],
+      "dependsOrder": "sequence",
+      "problemMatcher": []
+    },
+    {
+      "label": "Generate Test Coverage",
+      "dependsOn": [],
+      "command": "DotNetCoverageTests",
+      "type": "shell",
+      "args": [
+        "${workspaceFolder}",
+        "test/RestSpcService.Application.Tests",
+        "test/RestSpcService.Architecture.Tests"
+      ]
+    },
+    {
+      "label": "Generate Coverage Report",
+      "command": "~/.dotnet/tools/reportgenerator",
+      "type": "shell",
+      "args": [
+        "-reports:${workspaceFolder}/testresult/coverage.info",
+        "-targetdir:${workspaceFolder}/testresult/covstats"
+      ],
+      "dependsOn": [
+        "Generate Test Coverage"
+      ],
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "env",
+      "type": "pickString",
+      "description": "Selecciona el entorno",
+      "options": [
+        "QA",
+        "UAT",
+        "PRODUCTION"
+      ],
+      "default": "QA"
+    },
+    {
+      "id": "version",
+      "type": "promptString",
+      "description": "Introduce la versión a publicar (ej. 2.0.0.0)",
+      "default": "2.0.0.0"
+    }
+  ]
+}

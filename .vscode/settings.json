@@ -1,0 +1,5 @@
+{
+  "dotnet.defaultSolution": "src/microservice.sln",
+  "dotnet.solution.autoOpen": "src/microservice.sln",
+  "dotnet.enableWorkspaceBasedDevelopment": false
+}

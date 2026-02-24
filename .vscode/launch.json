@@ -1,0 +1,19 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug Main Project [https]",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "Build Main Project Dev",
+      "cwd": "${workspaceFolder}/Capitole365.Operations.WebApi",
+      "program": "${workspaceFolder}/Capitole365.Operations.WebApi/bin/Debug/net8.0/Capitole365.Operations.WebApi.dll",
+      "args": [],
+      "stopAtEntry": false,
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "launchSettingsProfile": "Capitole365.Operations.WebApi"
+    }
+  ]
+}
