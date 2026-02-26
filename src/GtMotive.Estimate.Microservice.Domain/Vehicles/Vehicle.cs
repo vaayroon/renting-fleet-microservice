@@ -65,6 +65,23 @@ public sealed class Vehicle
     }
 
     /// <summary>
+    /// Rehydrates a vehicle from persistence.
+    /// </summary>
+    /// <param name="id">Vehicle identifier.</param>
+    /// <param name="plate">Vehicle plate.</param>
+    /// <param name="manufactureDate">Vehicle manufacture date.</param>
+    /// <param name="status">Vehicle status.</param>
+    /// <returns>Rehydrated vehicle.</returns>
+    public static Vehicle Rehydrate(
+        VehicleId id,
+        LicensePlate plate,
+        DateTime manufactureDate,
+        VehicleStatus status)
+    {
+        return new Vehicle(id, plate, manufactureDate, status);
+    }
+
+    /// <summary>
     /// Marks vehicle as rented.
     /// </summary>
     public void MarkAsRented()

@@ -60,6 +60,32 @@ public sealed class Rental
     }
 
     /// <summary>
+    /// Rehydrates a rental from persistence.
+    /// </summary>
+    /// <param name="id">Rental identifier.</param>
+    /// <param name="vehicleId">Vehicle identifier.</param>
+    /// <param name="personId">Person identifier.</param>
+    /// <param name="startDateUtc">Start date UTC.</param>
+    /// <param name="endDateUtc">Optional end date UTC.</param>
+    /// <returns>Rehydrated rental.</returns>
+    public static Rental Rehydrate(
+        RentalId id,
+        VehicleId vehicleId,
+        PersonId personId,
+        DateTime startDateUtc,
+        DateTime? endDateUtc)
+    {
+        var rental = new Rental(id, vehicleId, personId, startDateUtc);
+
+        if (endDateUtc.HasValue)
+        {
+            rental.EndDateUtc = endDateUtc.Value;
+        }
+
+        return rental;
+    }
+
+    /// <summary>
     /// Closes the rental.
     /// </summary>
     /// <param name="utcNow">Current UTC date.</param>

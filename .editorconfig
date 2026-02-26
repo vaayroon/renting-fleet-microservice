@@ -539,8 +539,11 @@ dotnet_diagnostic.IDE0160.severity = none
 # IDE0005
 dotnet_diagnostic.IDE0005.severity = suggestion
 
+# SA1010
+dotnet_diagnostic.SA1010.severity = none
 # SA1600
 dotnet_diagnostic.SA1600.severity = none
+
 # S1128
 dotnet_diagnostic.S1128.severity = suggestion
 # S2094
