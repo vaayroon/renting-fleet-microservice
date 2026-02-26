@@ -4,6 +4,10 @@
   "dotnet.enableWorkspaceBasedDevelopment": false,
   "chat.tools.terminal.autoApprove": {
     "dotnet build": true,
-    "dotnet test": true
+    "dotnet test": true,
+    "pdftotext": true,
+    "PY": true,
+    "docker rm": true,
+    "true": true
   }
 }

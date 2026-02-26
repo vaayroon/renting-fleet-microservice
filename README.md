@@ -1,5 +1,95 @@
 # Sample Implementation of Hexagonal Architecture in a Microservice
 
+## Entrega final
+
+### Arquitectura usada
+
+Se implementa una arquitectura hexagonal (Ports and Adapters) con separación por capas:
+
+- `Domain`: entidades, value objects, reglas de negocio y contratos.
+- `ApplicationCore`: casos de uso y puertos de salida.
+- `Infrastructure`: adaptadores técnicos (MongoDB, logging, telemetry, unit of work).
+- `Api`: controladores, requests/responses, handlers MediatR y presenters.
+- `Host`: composición y arranque de la aplicación.
+
+### Decisiones clave
+
+- Casos de uso en `ApplicationCore` y sin dependencia de framework web.
+- Patrón `Presenter` para desacoplar salida de casos de uso de ASP.NET Core.
+- Persistencia Mongo con repositorios por agregado (`Vehicle`, `Rental`).
+- `UnitOfWork` explícito para mantener contrato de aplicación.
+- Pruebas por nivel:
+    - unitarias para reglas de negocio,
+    - funcionales para flujo handler/use case/presenter,
+    - infraestructura para comportamiento HTTP en `TestServer`.
+
+### Cómo levantar local
+
+1. Build local:
+
+```bash
+dotnet build src/microservice.sln
+```
+
+2. Test local:
+
+```bash
+dotnet test src/microservice.sln
+```
+
+3. Arranque con Docker Compose (Mongo + Host):
+
+```bash
+docker compose -f src/docker-compose.yml up --build
+```
+
+API host disponible en `http://localhost:8080`.
+MongoDB disponible en `mongodb://localhost:27017`.
+
+### Endpoints y ejemplos
+
+#### Crear vehículo
+
+`POST /api/vehicles`
+
+```bash
+curl -X POST "http://localhost:8080/api/vehicles" \
+    -H "Content-Type: application/json" \
+    -d '{
+        "plate": "1234-ABC",
+        "manufactureDate": "2024-01-15T00:00:00Z"
+    }'
+```
+
+#### Listar vehículos disponibles
+
+`GET /api/vehicles/available`
+
+```bash
+curl -X GET "http://localhost:8080/api/vehicles/available"
+```
+
+#### Alquilar vehículo
+
+`POST /api/rentals`
+
+```bash
+curl -X POST "http://localhost:8080/api/rentals" \
+    -H "Content-Type: application/json" \
+    -d '{
+        "vehicleId": "11111111-1111-1111-1111-111111111111",
+        "personId": "22222222-2222-2222-2222-222222222222"
+    }'
+```
+
+#### Devolver vehículo
+
+`POST /api/rentals/{rentalId}/return`
+
+```bash
+curl -X POST "http://localhost:8080/api/rentals/33333333-3333-3333-3333-333333333333/return"
+```
+
 ## Local run with Docker Compose
 
 From the repository root:
