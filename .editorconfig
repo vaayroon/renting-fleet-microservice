@@ -548,3 +548,6 @@ dotnet_diagnostic.S2094.severity = warning
 
 # CS1591
 dotnet_diagnostic.CS1591.severity = suggestion
+
+# IDE0290
+dotnet_diagnostic.IDE0290.severity = suggestion
