@@ -1,4 +1,15 @@
 # Sample Implementation of Hexagonal Architecture in a Microservice
+
+## Local run with Docker Compose
+
+From the repository root:
+
+```bash
+docker compose up --build
+```
+
+API host will be available at `http://localhost:8080` and MongoDB at `mongodb://localhost:27017`.
+
 ## Index
 ### [Introduction](#introduction)
 ### [Clean Architecture](#clean-architecture)

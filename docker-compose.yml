@@ -1,0 +1,30 @@
+services:
+  mongodb:
+    image: mongo:7.0
+    container_name: gtmotive-estimate-mongodb
+    restart: unless-stopped
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_DATABASE: estimate_microservice
+    volumes:
+      - mongo_data:/data/db
+
+  gtmotive.estimate.microservice.host:
+    image: gtmotive-estimate-microservice-host
+    container_name: gtmotive-estimate-microservice-host
+    build:
+      context: .
+      dockerfile: src/GtMotive.Estimate.Microservice.Host/Dockerfile
+    depends_on:
+      - mongodb
+    ports:
+      - "8080:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: http://+:8080
+      MongoDb__ConnectionString: mongodb://mongodb:27017
+      MongoDb__MongoDbDatabaseName: estimate_microservice
+
+volumes:
+  mongo_data:
