@@ -6,14 +6,14 @@
       "type": "coreclr",
       "request": "launch",
       "preLaunchTask": "Build Main Project Dev",
-      "cwd": "${workspaceFolder}/Capitole365.Operations.WebApi",
-      "program": "${workspaceFolder}/Capitole365.Operations.WebApi/bin/Debug/net8.0/Capitole365.Operations.WebApi.dll",
+      "cwd": "${workspaceFolder}/src/GtMotive.Estimate.Microservice.Host",
+      "program": "${workspaceFolder}/src/GtMotive.Estimate.Microservice.Host/bin/Debug/net9.0/GtMotive.Estimate.Microservice.Host.dll",
       "args": [],
       "stopAtEntry": false,
       "env": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },
-      "launchSettingsProfile": "Capitole365.Operations.WebApi"
+      "launchSettingsProfile": "http"
     }
   ]
 }

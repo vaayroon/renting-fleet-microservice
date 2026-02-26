@@ -7,7 +7,7 @@
       "type": "process",
       "args": [
         "build",
-        "${workspaceFolder}/Capitole365.Operations.WebApi/Capitole365.Operations.WebApi.csproj",
+        "${workspaceFolder}/src/GtMotive.Estimate.Microservice.Host/GtMotive.Estimate.Microservice.Host.csproj",
         "/property:GenerateFullPaths=true",
         "/consoleloggerparameters:NoSummary",
         "/p:Configuration=Debug",
@@ -23,7 +23,7 @@
       "args": [
         "run",
         "--project",
-        "${workspaceFolder}/Capitole365.Operations.WebApi/Capitole365.Operations.WebApi.csproj",
+        "${workspaceFolder}/src/GtMotive.Estimate.Microservice.Host/GtMotive.Estimate.Microservice.Host.csproj",
         "--launch-profile",
         "https"
       ],
@@ -41,7 +41,7 @@
         "watch",
         "run",
         "--project",
-        "${workspaceFolder}/Capitole365.Operations.WebApi/Capitole365.Operations.WebApi.csproj",
+        "${workspaceFolder}/src/GtMotive.Estimate.Microservice.Host/GtMotive.Estimate.Microservice.Host.csproj",
         "--launch-profile",
         "https"
       ],
@@ -57,7 +57,7 @@
       "command": "dotnet",
       "args": [
         "publish",
-        "${workspaceFolder}/Capitole365.Operations.WebApi/Capitole365.Operations.WebApi.csproj",
+        "${workspaceFolder}/src/GtMotive.Estimate.Microservice.Host/GtMotive.Estimate.Microservice.Host.csproj",
         "-c",
         "Release",
         "/p:EnvironmentName=${input:env}",
@@ -95,8 +95,9 @@
       "type": "shell",
       "args": [
         "${workspaceFolder}",
-        "test/RestSpcService.Application.Tests",
-        "test/RestSpcService.Architecture.Tests"
+        "test/unit/GtMotive.Estimate.Microservice.UnitTests",
+        "test/infrastructure/GtMotive.Estimate.Microservice.InfrastructureTests",
+        "test/functional/GtMotive.Estimate.Microservice.FunctionalTests"
       ]
     },
     {

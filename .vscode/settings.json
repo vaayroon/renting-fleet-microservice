@@ -1,5 +1,8 @@
 {
   "dotnet.defaultSolution": "src/microservice.sln",
   "dotnet.solution.autoOpen": "src/microservice.sln",
-  "dotnet.enableWorkspaceBasedDevelopment": false
+  "dotnet.enableWorkspaceBasedDevelopment": false,
+  "chat.tools.terminal.autoApprove": {
+    "dotnet build": true
+  }
 }

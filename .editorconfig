@@ -533,3 +533,18 @@ csharp_style_prefer_primary_constructors = true:suggestion
 csharp_prefer_system_threading_lock = true:suggestion
 csharp_style_expression_bodied_lambdas = true:silent
 csharp_style_expression_bodied_local_functions = false:silent
+
+# IDE0160
+dotnet_diagnostic.IDE0160.severity = none
+# IDE0005
+dotnet_diagnostic.IDE0005.severity = suggestion
+
+# SA1600
+dotnet_diagnostic.SA1600.severity = none
+# S1128
+dotnet_diagnostic.S1128.severity = suggestion
+# S2094
+dotnet_diagnostic.S2094.severity = warning
+
+# CS1591
+dotnet_diagnostic.CS1591.severity = suggestion
