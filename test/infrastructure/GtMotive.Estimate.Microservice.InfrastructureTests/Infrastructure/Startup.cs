@@ -6,6 +6,7 @@ using GtMotive.Estimate.Microservice.Infrastructure;
 using MediatR;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -41,7 +42,14 @@ namespace GtMotive.Estimate.Microservice.InfrastructureTests.Infrastructure
                 .AddTestServer();
 
             services.AddControllers(ApiConfiguration.ConfigureControllers)
+                .AddNewtonsoftJson()
                 .WithApiControllers();
+
+            services.Configure<ApiBehaviorOptions>(options =>
+            {
+                // Return 400 without a response body to avoid TestServer JSON formatter issues.
+                options.InvalidModelStateResponseFactory = _ => new BadRequestResult();
+            });
 
             services.AddBaseInfrastructure(true);
         }
