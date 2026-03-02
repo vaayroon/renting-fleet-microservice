@@ -1,0 +1,15 @@
+**/.git
+**/.gitignore
+**/.vs
+**/.vscode
+**/.idea
+**/bin
+**/obj
+**/TestResults
+**/node_modules
+**/*.user
+**/*.suo
+**/*.swp
+**/*.md
+!.dockerignore
+!README.md

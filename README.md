@@ -25,6 +25,12 @@ Se implementa una arquitectura hexagonal (Ports and Adapters) con separación po
 
 ### Cómo levantar local
 
+Prerrequisitos:
+
+- .NET SDK 9
+- Docker Desktop
+- Visual Studio 2022 con carga de trabajo de ASP.NET y herramientas de contenedores
+
 1. Build local:
 
 ```bash
@@ -37,14 +43,36 @@ dotnet build src/microservice.sln
 dotnet test src/microservice.sln
 ```
 
-3. Arranque con Docker Compose (Mongo + Host):
+### Ejecutar y debuggear en Visual Studio (modo tradicional)
+
+1. Abre `src/microservice.sln`.
+2. Arranca MongoDB (si no está arrancado):
 
 ```bash
-docker compose -f src/docker-compose.yml up --build
+docker compose -f src/docker-compose.yml up -d mongodb
 ```
 
-API host disponible en `http://localhost:8080`.
-MongoDB disponible en `mongodb://localhost:27017`.
+3. En Visual Studio, selecciona como proyecto de inicio `GtMotive.Estimate.Microservice.Host`.
+4. Selecciona el perfil `http` y pulsa `F5`.
+
+La API quedará disponible en:
+
+- `https://localhost:7012/swagger`
+- `http://localhost:5182/swagger`
+
+### Ejecutar y debuggear en Visual Studio (Docker)
+
+El repositorio ya incluye proyecto `docker-compose` y perfil `Docker` en `launchSettings.json`, por lo que puedes depurar en contenedor desde Visual Studio.
+
+Opción recomendada (multi-contenedor):
+
+1. En Visual Studio, establece `docker-compose` como proyecto de inicio.
+2. Pulsa `F5`.
+
+La API en contenedor quedará disponible en `http://localhost:8080/swagger`.
+MongoDB quedará disponible en `mongodb://localhost:27017`.
+
+> Nota: Si necesitas restaurar paquetes privados en el build de Docker, define `PERSONAL_ACCESS_TOKEN` en tu entorno antes de iniciar la depuración.
 
 ### Endpoints y ejemplos
 
@@ -95,7 +123,7 @@ curl -X POST "http://localhost:8080/api/rentals/33333333-3333-3333-3333-33333333
 From the repository root:
 
 ```bash
-docker compose up --build
+docker compose -f src/docker-compose.yml up --build
 ```
 
 API host will be available at `http://localhost:8080` and MongoDB at `mongodb://localhost:27017`.
