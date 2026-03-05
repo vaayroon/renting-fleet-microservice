@@ -1,6 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using FluentAssertions;
+using GtMotive.Estimate.Microservice.ApplicationCore.DomainEvents;
 using GtMotive.Estimate.Microservice.ApplicationCore.UseCases.Rentals.RentVehicle;
 using GtMotive.Estimate.Microservice.Domain.Exceptions;
 using GtMotive.Estimate.Microservice.Domain.Interfaces;
@@ -37,6 +38,7 @@ namespace GtMotive.Estimate.Microservice.UnitTests.ApplicationCore
             var vehicleRepository = new Mock<IVehicleRepository>();
             var rentalRepository = new Mock<IRentalRepository>();
             var unitOfWork = new Mock<IUnitOfWork>();
+            var domainEventDispatcher = new Mock<IDomainEventDispatcher>();
             var outputPort = new Mock<IRentVehicleOutputPort>();
 
             vehicleRepository
@@ -51,6 +53,7 @@ namespace GtMotive.Estimate.Microservice.UnitTests.ApplicationCore
                 vehicleRepository.Object,
                 rentalRepository.Object,
                 unitOfWork.Object,
+                domainEventDispatcher.Object,
                 outputPort.Object);
 
             Func<Task> action = async () =>

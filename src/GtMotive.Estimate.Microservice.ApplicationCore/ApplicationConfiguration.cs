@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using GtMotive.Estimate.Microservice.ApplicationCore.DomainEvents;
 using GtMotive.Estimate.Microservice.ApplicationCore.UseCases.Rentals.RentVehicle;
 using GtMotive.Estimate.Microservice.ApplicationCore.UseCases.Rentals.ReturnVehicle;
 using GtMotive.Estimate.Microservice.ApplicationCore.UseCases.Vehicles.CreateVehicle;
@@ -23,6 +24,7 @@ namespace GtMotive.Estimate.Microservice.ApplicationCore
         /// <returns>The modified instance.</returns>
         public static IServiceCollection AddUseCases(this IServiceCollection services)
         {
+            services.AddScoped<IDomainEventDispatcher, BusDomainEventDispatcher>();
             services.AddScoped<ICreateVehicleUseCase, CreateVehicleUseCase>();
             services.AddScoped<IListAvailableVehiclesUseCase, ListAvailableVehiclesUseCase>();
             services.AddScoped<IRentVehicleUseCase, RentVehicleUseCase>();

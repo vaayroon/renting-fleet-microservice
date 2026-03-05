@@ -1,6 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using GtMotive.Estimate.Microservice.ApplicationCore.DomainEvents;
 using GtMotive.Estimate.Microservice.Domain;
+using GtMotive.Estimate.Microservice.Domain.Common;
 using GtMotive.Estimate.Microservice.Domain.Interfaces;
 using GtMotive.Estimate.Microservice.Domain.Rentals;
 using GtMotive.Estimate.Microservice.Domain.Vehicles;
@@ -15,6 +17,7 @@ namespace GtMotive.Estimate.Microservice.ApplicationCore.UseCases.Rentals.Return
         private readonly IRentalRepository _rentalRepository;
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IUnitOfWork _unitOfWork;
+        private readonly IDomainEventDispatcher _domainEventDispatcher;
         private readonly IReturnVehicleOutputPort _outputPort;
 
         /// <summary>
@@ -23,16 +26,19 @@ namespace GtMotive.Estimate.Microservice.ApplicationCore.UseCases.Rentals.Return
         /// <param name="rentalRepository">Rental repository.</param>
         /// <param name="vehicleRepository">Vehicle repository.</param>
         /// <param name="unitOfWork">Unit of work.</param>
+        /// <param name="domainEventDispatcher">Domain event dispatcher.</param>
         /// <param name="outputPort">Output port.</param>
         public ReturnVehicleUseCase(
             IRentalRepository rentalRepository,
             IVehicleRepository vehicleRepository,
             IUnitOfWork unitOfWork,
+            IDomainEventDispatcher domainEventDispatcher,
             IReturnVehicleOutputPort outputPort)
         {
             _rentalRepository = rentalRepository;
             _vehicleRepository = vehicleRepository;
             _unitOfWork = unitOfWork;
+            _domainEventDispatcher = domainEventDispatcher;
             _outputPort = outputPort;
         }
 
@@ -68,6 +74,7 @@ namespace GtMotive.Estimate.Microservice.ApplicationCore.UseCases.Rentals.Return
             await _rentalRepository.Update(rental);
             await _vehicleRepository.Update(vehicle);
             await _unitOfWork.Save();
+            await _domainEventDispatcher.DispatchAndClear([rental, vehicle]);
 
             _outputPort.StandardHandle(
                 new ReturnVehicleOutput(
