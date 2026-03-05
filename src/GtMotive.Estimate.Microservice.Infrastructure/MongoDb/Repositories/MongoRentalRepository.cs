@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using GtMotive.Estimate.Microservice.Domain.Exceptions;
 using GtMotive.Estimate.Microservice.Domain.Interfaces;
 using GtMotive.Estimate.Microservice.Domain.Rentals;
 using GtMotive.Estimate.Microservice.Domain.Vehicles;
@@ -34,7 +35,14 @@ namespace GtMotive.Estimate.Microservice.Infrastructure.MongoDb.Repositories
         {
             ArgumentNullException.ThrowIfNull(rental);
 
-            await _collection.InsertOneAsync(RentalMapper.ToDocument(rental));
+            try
+            {
+                await _collection.InsertOneAsync(RentalMapper.ToDocument(rental));
+            }
+            catch (MongoWriteException exception) when (exception.WriteError?.Code == 11000)
+            {
+                throw new UniqueConstraintViolationException("An active rental already exists for this person or vehicle.", exception);
+            }
         }
 
         /// <inheritdoc />
@@ -43,7 +51,14 @@ namespace GtMotive.Estimate.Microservice.Infrastructure.MongoDb.Repositories
             ArgumentNullException.ThrowIfNull(rental);
 
             var filter = Builders<RentalDocument>.Filter.Eq(x => x.Id, rental.Id.Value);
-            await _collection.ReplaceOneAsync(filter, RentalMapper.ToDocument(rental));
+            try
+            {
+                await _collection.ReplaceOneAsync(filter, RentalMapper.ToDocument(rental));
+            }
+            catch (MongoWriteException exception) when (exception.WriteError?.Code == 11000)
+            {
+                throw new UniqueConstraintViolationException("An active rental already exists for this person or vehicle.", exception);
+            }
         }
 
         /// <inheritdoc />

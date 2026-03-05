@@ -23,6 +23,61 @@ Se implementa una arquitectura hexagonal (Ports and Adapters) con separación po
     - funcionales para flujo handler/use case/presenter,
     - infraestructura para comportamiento HTTP en `TestServer`.
 
+### Mejoras
+
+#### Qué se mejoró
+
+- DDD explícito en agregados: `Vehicle` y `Rental` ahora heredan de `AggregateRoot` y registran eventos de dominio.
+- Domain Events concretos:
+    - `VehicleRentedDomainEvent`
+    - `VehicleReturnedDomainEvent`
+    - `RentalStartedDomainEvent`
+    - `RentalReturnedDomainEvent`
+- Dispatch post-commit: después de `IUnitOfWork.Save()` se publican y limpian eventos de agregados en:
+    - `RentVehicleUseCase`
+    - `ReturnVehicleUseCase`
+- Infra de bus desacoplada para no bloquear la entrega:
+    - `IDomainEventDispatcher` + `BusDomainEventDispatcher`
+    - `IBusFactory` con implementación `NoOpBusFactory`.
+- MongoDB index bootstrap centralizado:
+    - Índices movidos desde repositorios a `MongoIndexBootstrapper` invocado por `MongoService`.
+    - Nuevo índice `ix_vehicle_status` para optimizar `GetAvailable`.
+    - Índices de rentals activas (`ix_rental_person_active`, `ix_rental_vehicle_active`) con `PartialFilterExpression` (`EndDateUtc == null`).
+- Patrón avanzado añadido con uso real:
+    - `ISpecification<T>` + `VehicleRentableSpecification` aplicado en `RentVehicleUseCase`.
+
+#### Evidencia de validación
+
+- Build de solución OK:
+
+```bash
+dotnet build src/microservice.sln
+```
+
+- Unit tests de casos impactados OK:
+
+```bash
+dotnet test test/unit/GtMotive.Estimate.Microservice.UnitTests/GtMotive.Estimate.Microservice.UnitTests.csproj --filter "RentVehicleUseCaseTests|VehicleRentableSpecificationTests"
+```
+
+- Infrastructure tests OK tras cambios de índices:
+
+```bash
+dotnet test test/infrastructure/GtMotive.Estimate.Microservice.InfrastructureTests/GtMotive.Estimate.Microservice.InfrastructureTests.csproj
+```
+
+#### Trade-offs y alcance
+
+- Se priorizó una mejora vertical completa (dominio -> aplicación -> infraestructura -> tests) sobre introducir muchos patrones incompletos.
+- El bus está en modo `NoOp` para mantener compatibilidad y evitar riesgo operativo en esta entrega.
+- No se implementó Outbox en esta iteración para no comprometer el plazo de hoy.
+
+#### Siguiente iteración recomendada
+
+- Implementar Outbox para publicación confiable de eventos en escenarios de fallo entre commit y publish.
+- Añadir índices `unique partial` para reforzar unicidad de rental activa por persona/vehículo a nivel de base de datos.
+- Incorporar pruebas de integración para validar metadatos de índices creados (`getIndexes`) y ruta de publicación de eventos.
+
 ### Cómo levantar local
 
 Prerrequisitos:

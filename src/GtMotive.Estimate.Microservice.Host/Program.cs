@@ -8,6 +8,7 @@ using GtMotive.Estimate.Microservice.Api;
 using GtMotive.Estimate.Microservice.Host.Configuration;
 using GtMotive.Estimate.Microservice.Host.DependencyInjection;
 using GtMotive.Estimate.Microservice.Infrastructure;
+using GtMotive.Estimate.Microservice.Infrastructure.MongoDb;
 using GtMotive.Estimate.Microservice.Infrastructure.MongoDb.Settings;
 using IdentityServer4.AccessTokenValidation;
 using Microsoft.ApplicationInsights.Extensibility;
@@ -22,6 +23,7 @@ using Serilog.Events;
 using Serilog.Sinks.SystemConsole.Themes;
 
 var builder = WebApplication.CreateBuilder();
+var runIndexMigrations = Array.Exists(args, arg => string.Equals(arg, "--migrate-indexes", StringComparison.OrdinalIgnoreCase));
 
 // Configuration.
 if (!builder.Environment.IsDevelopment())
@@ -95,6 +97,15 @@ builder.Services.AddAuthentication(options =>
 builder.Services.AddSwagger(appSettings, builder.Configuration);
 
 var app = builder.Build();
+
+if (runIndexMigrations)
+{
+    using var scope = app.Services.CreateScope();
+    var mongoService = scope.ServiceProvider.GetRequiredService<MongoService>();
+
+    mongoService.RunIndexMigrations();
+    return;
+}
 
 // Logging configuration.
 Log.Logger = builder.Environment.IsDevelopment() ?

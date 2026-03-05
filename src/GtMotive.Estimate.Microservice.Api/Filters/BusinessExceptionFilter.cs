@@ -1,5 +1,6 @@
 ﻿using System;
 using GtMotive.Estimate.Microservice.Domain;
+using GtMotive.Estimate.Microservice.Domain.Exceptions;
 using GtMotive.Estimate.Microservice.Domain.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,7 +18,23 @@ namespace GtMotive.Estimate.Microservice.Api.Filters
 
             _appLogger.LogError(context.Exception, "Exception captured in BusinessExceptionFilter.");
 
-            if (context.Exception is DomainException)
+            if (context.Exception is UniqueConstraintViolationException)
+            {
+                var problemDetails = new ProblemDetails
+                {
+                    Type = "https://tools.ietf.org/html/rfc7231#section-6.5.8",
+                    Status = StatusCodes.Status409Conflict,
+                    Title = "Conflict",
+                    Detail = context.Exception.Message,
+                    Instance = context.HttpContext.Request.Path,
+                };
+
+                _appLogger.LogWarning("Domain Conflict: {status} - {detail}", problemDetails.Status, problemDetails.Detail);
+
+                context.Result = new ConflictObjectResult(problemDetails);
+                context.Exception = null;
+            }
+            else if (context.Exception is DomainException)
             {
                 var problemDetails = new ProblemDetails
                 {

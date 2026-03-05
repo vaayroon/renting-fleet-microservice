@@ -112,6 +112,19 @@
         "Generate Test Coverage"
       ],
       "problemMatcher": []
+    },
+    {
+      "label": "Run Mongo Index Migrations",
+      "command": "dotnet",
+      "type": "process",
+      "args": [
+        "run",
+        "--project",
+        "${workspaceFolder}/src/GtMotive.Estimate.Microservice.Host/GtMotive.Estimate.Microservice.Host.csproj",
+        "--",
+        "--migrate-indexes"
+      ],
+      "problemMatcher": "$msCompile"
     }
   ],
   "inputs": [

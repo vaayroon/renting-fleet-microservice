@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GtMotive.Estimate.Microservice.Domain.Exceptions;
 using GtMotive.Estimate.Microservice.Domain.Interfaces;
 using GtMotive.Estimate.Microservice.Domain.Vehicles;
 using GtMotive.Estimate.Microservice.Infrastructure.MongoDb.Documents;
@@ -35,7 +36,14 @@ namespace GtMotive.Estimate.Microservice.Infrastructure.MongoDb.Repositories
         {
             ArgumentNullException.ThrowIfNull(vehicle);
 
-            await _collection.InsertOneAsync(VehicleMapper.ToDocument(vehicle));
+            try
+            {
+                await _collection.InsertOneAsync(VehicleMapper.ToDocument(vehicle));
+            }
+            catch (MongoWriteException exception) when (exception.WriteError?.Code == 11000)
+            {
+                throw new UniqueConstraintViolationException("Vehicle with same plate already exists.", exception);
+            }
         }
 
         /// <inheritdoc />
@@ -44,7 +52,14 @@ namespace GtMotive.Estimate.Microservice.Infrastructure.MongoDb.Repositories
             ArgumentNullException.ThrowIfNull(vehicle);
 
             var filter = Builders<VehicleDocument>.Filter.Eq(x => x.Id, vehicle.Id.Value);
-            await _collection.ReplaceOneAsync(filter, VehicleMapper.ToDocument(vehicle));
+            try
+            {
+                await _collection.ReplaceOneAsync(filter, VehicleMapper.ToDocument(vehicle));
+            }
+            catch (MongoWriteException exception) when (exception.WriteError?.Code == 11000)
+            {
+                throw new UniqueConstraintViolationException("Vehicle with same plate already exists.", exception);
+            }
         }
 
         /// <inheritdoc />
