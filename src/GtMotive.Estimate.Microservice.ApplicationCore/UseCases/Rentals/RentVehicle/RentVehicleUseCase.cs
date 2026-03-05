@@ -7,6 +7,7 @@ using GtMotive.Estimate.Microservice.Domain.Exceptions;
 using GtMotive.Estimate.Microservice.Domain.Interfaces;
 using GtMotive.Estimate.Microservice.Domain.Rentals;
 using GtMotive.Estimate.Microservice.Domain.Vehicles;
+using GtMotive.Estimate.Microservice.Domain.Vehicles.Specifications;
 
 namespace GtMotive.Estimate.Microservice.ApplicationCore.UseCases.Rentals.RentVehicle
 {
@@ -15,6 +16,8 @@ namespace GtMotive.Estimate.Microservice.ApplicationCore.UseCases.Rentals.RentVe
     /// </summary>
     public sealed class RentVehicleUseCase : IRentVehicleUseCase
     {
+        private static readonly VehicleRentableSpecification VehicleRentableSpecification = new();
+
         private readonly IVehicleRepository _vehicleRepository;
         private readonly IRentalRepository _rentalRepository;
         private readonly IUnitOfWork _unitOfWork;
@@ -58,7 +61,7 @@ namespace GtMotive.Estimate.Microservice.ApplicationCore.UseCases.Rentals.RentVe
                 return;
             }
 
-            if (!vehicle.IsAvailable)
+            if (!VehicleRentableSpecification.IsSatisfiedBy(vehicle))
             {
                 throw new DomainException("Vehicle is not available for rent.");
             }

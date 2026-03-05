@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using FluentAssertions;
 using GtMotive.Estimate.Microservice.ApplicationCore.DomainEvents;
 using GtMotive.Estimate.Microservice.ApplicationCore.UseCases.Rentals.RentVehicle;
+using GtMotive.Estimate.Microservice.Domain;
 using GtMotive.Estimate.Microservice.Domain.Exceptions;
 using GtMotive.Estimate.Microservice.Domain.Interfaces;
 using GtMotive.Estimate.Microservice.Domain.Rentals;
@@ -61,6 +62,51 @@ namespace GtMotive.Estimate.Microservice.UnitTests.ApplicationCore
 
             await action.Should().ThrowAsync<ActiveRentalAlreadyExistsException>();
 
+            rentalRepository.Verify(repository => repository.Add(It.IsAny<Rental>()), Times.Never);
+            vehicleRepository.Verify(repository => repository.Update(It.IsAny<Vehicle>()), Times.Never);
+            unitOfWork.Verify(work => work.Save(), Times.Never);
+        }
+
+        /// <summary>
+        /// Ensures renting fails when the vehicle is not available.
+        /// </summary>
+        /// <returns>Asynchronous task.</returns>
+        [Fact]
+        public async Task ExecuteWhenVehicleIsNotAvailableShouldThrowDomainException()
+        {
+            var vehicleId = new VehicleId(Guid.NewGuid());
+            var personId = new PersonId(Guid.NewGuid());
+
+            var unavailableVehicle = Vehicle.Rehydrate(
+                vehicleId,
+                new LicensePlate("5678-DEF"),
+                DateTime.UtcNow.AddYears(-2),
+                VehicleStatus.Rented);
+
+            var vehicleRepository = new Mock<IVehicleRepository>();
+            var rentalRepository = new Mock<IRentalRepository>();
+            var unitOfWork = new Mock<IUnitOfWork>();
+            var domainEventDispatcher = new Mock<IDomainEventDispatcher>();
+            var outputPort = new Mock<IRentVehicleOutputPort>();
+
+            vehicleRepository
+                .Setup(repository => repository.GetById(vehicleId))
+                .ReturnsAsync(unavailableVehicle);
+
+            var useCase = new RentVehicleUseCase(
+                vehicleRepository.Object,
+                rentalRepository.Object,
+                unitOfWork.Object,
+                domainEventDispatcher.Object,
+                outputPort.Object);
+
+            Func<Task> action = async () =>
+                await useCase.Execute(new RentVehicleInput(vehicleId.Value, personId.Value));
+
+            await action.Should().ThrowAsync<DomainException>()
+                .WithMessage("Vehicle is not available for rent.");
+
+            rentalRepository.Verify(repository => repository.GetActiveByPersonId(It.IsAny<PersonId>()), Times.Never);
             rentalRepository.Verify(repository => repository.Add(It.IsAny<Rental>()), Times.Never);
             vehicleRepository.Verify(repository => repository.Update(It.IsAny<Vehicle>()), Times.Never);
             unitOfWork.Verify(work => work.Save(), Times.Never);
