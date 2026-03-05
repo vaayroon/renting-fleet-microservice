@@ -28,7 +28,6 @@ namespace GtMotive.Estimate.Microservice.Infrastructure.MongoDb.Repositories
             ArgumentNullException.ThrowIfNull(mongoService);
 
             _collection = mongoService.Database.GetCollection<VehicleDocument>(VehiclesCollectionName);
-            EnsureIndexes();
         }
 
         /// <inheritdoc />
@@ -73,15 +72,6 @@ namespace GtMotive.Estimate.Microservice.Infrastructure.MongoDb.Repositories
 
             var filter = Builders<VehicleDocument>.Filter.Eq(x => x.Plate, plate.Value);
             return await _collection.Find(filter).AnyAsync();
-        }
-
-        private void EnsureIndexes()
-        {
-            var plateIndex = new CreateIndexModel<VehicleDocument>(
-                Builders<VehicleDocument>.IndexKeys.Ascending(x => x.Plate),
-                new CreateIndexOptions { Unique = true, Name = "ux_vehicle_plate" });
-
-            _collection.Indexes.CreateOne(plateIndex);
         }
     }
 }

@@ -27,7 +27,6 @@ namespace GtMotive.Estimate.Microservice.Infrastructure.MongoDb.Repositories
             ArgumentNullException.ThrowIfNull(mongoService);
 
             _collection = mongoService.Database.GetCollection<RentalDocument>(RentalsCollectionName);
-            EnsureIndexes();
         }
 
         /// <inheritdoc />
@@ -78,20 +77,6 @@ namespace GtMotive.Estimate.Microservice.Infrastructure.MongoDb.Repositories
             var document = await _collection.Find(filter).FirstOrDefaultAsync();
 
             return document == null ? null : RentalMapper.ToDomain(document);
-        }
-
-        private void EnsureIndexes()
-        {
-            var personActiveIndex = new CreateIndexModel<RentalDocument>(
-                Builders<RentalDocument>.IndexKeys.Ascending(x => x.PersonId).Ascending(x => x.EndDateUtc),
-                new CreateIndexOptions { Name = "ix_rental_person_active" });
-
-            var vehicleActiveIndex = new CreateIndexModel<RentalDocument>(
-                Builders<RentalDocument>.IndexKeys.Ascending(x => x.VehicleId).Ascending(x => x.EndDateUtc),
-                new CreateIndexOptions { Name = "ix_rental_vehicle_active" });
-
-            _collection.Indexes.CreateOne(personActiveIndex);
-            _collection.Indexes.CreateOne(vehicleActiveIndex);
         }
     }
 }

@@ -14,6 +14,9 @@ namespace GtMotive.Estimate.Microservice.Infrastructure.MongoDb
             MongoClient = new MongoClient(options.Value.ConnectionString);
             Database = MongoClient.GetDatabase(options.Value.MongoDbDatabaseName);
 
+            // Ensure indexes once during infrastructure bootstrap.
+            MongoIndexBootstrapper.EnsureIndexes(Database);
+
             // Add call to RegisterBsonClasses() method.
             RegisterBsonClasses();
         }
