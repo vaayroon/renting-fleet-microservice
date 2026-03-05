@@ -1,12 +1,14 @@
 using System;
+using GtMotive.Estimate.Microservice.Domain.Common;
 using GtMotive.Estimate.Microservice.Domain.Exceptions;
+using GtMotive.Estimate.Microservice.Domain.Vehicles.Events;
 
 namespace GtMotive.Estimate.Microservice.Domain.Vehicles;
 
 /// <summary>
 /// Represents a vehicle in the fleet.
 /// </summary>
-public sealed class Vehicle
+public sealed class Vehicle : AggregateRoot
 {
     private Vehicle(
         VehicleId id,
@@ -92,6 +94,7 @@ public sealed class Vehicle
         }
 
         Status = VehicleStatus.Rented;
+        AddDomainEvent(new VehicleRentedDomainEvent(Id, DateTime.UtcNow));
     }
 
     /// <summary>
@@ -100,5 +103,6 @@ public sealed class Vehicle
     public void MarkAsAvailable()
     {
         Status = VehicleStatus.Available;
+        AddDomainEvent(new VehicleReturnedDomainEvent(Id, DateTime.UtcNow));
     }
 }

@@ -1,4 +1,6 @@
 using System;
+using GtMotive.Estimate.Microservice.Domain.Common;
+using GtMotive.Estimate.Microservice.Domain.Rentals.Events;
 using GtMotive.Estimate.Microservice.Domain.Vehicles;
 
 namespace GtMotive.Estimate.Microservice.Domain.Rentals;
@@ -6,7 +8,7 @@ namespace GtMotive.Estimate.Microservice.Domain.Rentals;
 /// <summary>
 /// Represents a vehicle rental lifecycle.
 /// </summary>
-public sealed class Rental
+public sealed class Rental : AggregateRoot
 {
     private Rental(RentalId id, VehicleId vehicleId, PersonId personId, DateTime startDateUtc)
     {
@@ -56,7 +58,9 @@ public sealed class Rental
     /// <returns>New active rental.</returns>
     public static Rental StartNew(RentalId id, VehicleId vehicleId, PersonId personId, DateTime utcNow)
     {
-        return new Rental(id, vehicleId, personId, utcNow);
+        var rental = new Rental(id, vehicleId, personId, utcNow);
+        rental.AddDomainEvent(new RentalStartedDomainEvent(id, vehicleId, personId, utcNow));
+        return rental;
     }
 
     /// <summary>
@@ -97,5 +101,6 @@ public sealed class Rental
         }
 
         EndDateUtc = utcNow;
+        AddDomainEvent(new RentalReturnedDomainEvent(Id, VehicleId, PersonId, utcNow));
     }
 }
